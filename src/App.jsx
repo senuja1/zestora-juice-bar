@@ -25,22 +25,20 @@ import {
 
 // ─── fade-up helper ───────────────────────────────────────────────────────────
 const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 28 },
+  initial: { opacity: 1, y: 0 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.25, delay: 0, ease: [0.22, 1, 0.36, 1] },
 });
 
 const fadeUpView = (delay = 0) => ({
-  initial: { opacity: 0, y: 28 },
+  initial: { opacity: 1, y: 0 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.25, delay: 0, ease: [0.22, 1, 0.36, 1] },
 });
 
 export default function App() {
-  const { scrollYProgress } = useScroll();
-  const heroY   = useTransform(scrollYProgress, [0, 1], [0, -110]);
-  const imageY  = useTransform(scrollYProgress, [0, 1], [0, -55]);
+  // Scroll transforms removed to prevent browser/GPU layer flicker.
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const [hovered, setHovered] = useState(null);
 
@@ -52,8 +50,8 @@ export default function App() {
 
   const statsRef  = useRef(null);
   const storyRef  = useRef(null);
-  const statsIn   = useInView(statsRef,  { once: true, margin: "-60px" });
-  const storyIn   = useInView(storyRef,  { once: true, margin: "-80px" });
+  const statsIn   = true;
+  const storyIn   = true;
 
   // ─── DATA ────────────────────────────────────────────────────────────────────
   const drinks = [
@@ -153,28 +151,28 @@ export default function App() {
   ];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#090806] text-white selection:bg-orange-300 selection:text-black">
+    <main className="relative isolate min-h-screen overflow-x-hidden bg-[#090806] text-white selection:bg-orange-300 selection:text-black">
 
       {/* ── background ────────────────────────────────────────────────────────── */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(255,154,31,.24),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(168,255,72,.16),transparent_28%),linear-gradient(135deg,#090806_0%,#15110d_42%,#050403_100%)]" />
         <div className="absolute inset-0 opacity-[0.10] bg-[radial-gradient(circle_at_center,rgba(255,255,255,.14)_1px,transparent_1px)] bg-[size:22px_22px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70" />
         {/* slow ambient orbs */}
-        <motion.div animate={{ scale:[1,1.18,1], opacity:[0.18,0.32,0.18] }} transition={{ duration:9, repeat:Infinity, ease:"easeInOut" }} className="absolute left-[14%] top-[12%] h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
-        <motion.div animate={{ scale:[1,1.14,1], opacity:[0.14,0.26,0.14] }} transition={{ duration:11, repeat:Infinity, ease:"easeInOut", delay:3 }} className="absolute right-[12%] bottom-[18%] h-80 w-80 rounded-full bg-lime-400/15 blur-3xl" />
+        <motion.div animate={{ scale:[1,1.18,1], opacity:[0.18,0.32,0.18] }} transition={{ duration:9, repeat:Infinity, ease:"easeInOut" }} className="absolute left-[14%] top-[12%] h-72 w-72 rounded-full bg-orange-400/20 blur-xl" />
+        <motion.div animate={{ scale:[1,1.14,1], opacity:[0.14,0.26,0.14] }} transition={{ duration:11, repeat:Infinity, ease:"easeInOut", delay:3 }} className="absolute right-[12%] bottom-[18%] h-80 w-80 rounded-full bg-lime-400/15 blur-xl" />
       </div>
 
       {/* ── cursor glow ───────────────────────────────────────────────────────── */}
       <div
-        className="pointer-events-none fixed z-50 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-300/8 blur-3xl transition-transform duration-75"
+        className="pointer-events-none fixed z-0 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-300/8 blur-xl transition-transform duration-75"
         style={{ left: mouse.x, top: mouse.y }}
       />
 
       {/* ══════════════════════════════════════════════════════════════════════
           NAV
       ══════════════════════════════════════════════════════════════════════ */}
-      <nav className="fixed left-1/2 top-5 z-40 flex w-[calc(100%-2rem)] max-w-7xl -translate-x-1/2 items-center justify-between rounded-full border border-white/10 bg-[#15110d]/75 px-5 py-3 shadow-2xl shadow-black/40 backdrop-blur-2xl">
+      <nav className="fixed left-1/2 top-5 z-40 flex w-[calc(100%-2rem)] max-w-7xl -translate-x-1/2 items-center justify-between rounded-full border border-white/10 bg-[#15110d]/75 px-5 py-3 shadow-2xl shadow-black/40 backdrop-blur-md">
         <a href="#top" className="flex items-center gap-3">
           <motion.div whileHover={{ rotate: 14, scale: 1.1 }} transition={{ type:"spring", stiffness:320 }} className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-orange-300 to-lime-300 text-black shadow-lg shadow-orange-400/20">
             <Leaf className="h-5 w-5" />
@@ -199,10 +197,10 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="top" className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 pb-20 pt-32 lg:grid-cols-[1fr_1.05fr]">
+      <section id="top" className="relative z-10 mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 pb-20 pt-32 lg:grid-cols-[1fr_1.05fr]">
 
-        <motion.div style={{ y: heroY }}>
-          <motion.div {...fadeUp(0)} className="mb-7 inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-300/10 px-4 py-2 text-sm font-bold text-orange-100 backdrop-blur-xl">
+        <motion.div>
+          <motion.div {...fadeUp(0)} className="mb-7 inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-300/10 px-4 py-2 text-sm font-bold text-orange-100 backdrop-blur-md">
             <Sparkles className="h-4 w-4" /> Colombo's freshest cold press bar
           </motion.div>
 
@@ -226,14 +224,14 @@ export default function App() {
             <motion.a href="#menu" whileHover={{ scale:1.05 }} whileTap={{ scale:0.97 }} className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-orange-300 to-lime-300 px-8 py-4 font-black text-black shadow-2xl shadow-orange-500/20 transition">
               Explore the Bar <ArrowUpRight className="h-5 w-5 transition group-hover:rotate-45" />
             </motion.a>
-            <motion.a href="#process" whileHover={{ scale:1.03 }} className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-8 py-4 font-bold text-white backdrop-blur-xl transition hover:bg-white/12">
+            <motion.a href="#process" whileHover={{ scale:1.03 }} className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-8 py-4 font-bold text-white backdrop-blur-md transition hover:bg-white/12">
               How it's made
             </motion.a>
           </motion.div>
 
           <motion.div {...fadeUp(0.34)} className="mt-9 grid gap-3 sm:grid-cols-3">
             {["No syrup. Ever.", "Done in 4 minutes", "Fresh fruit every morning"].map((item, i) => (
-              <motion.div key={item} whileHover={{ y:-5, backgroundColor:"rgba(255,255,255,0.09)" }} transition={{ type:"spring", stiffness:300 }} className="rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-bold text-white/60 backdrop-blur-xl cursor-default">
+              <motion.div key={item} whileHover={{ y:-5, backgroundColor:"rgba(255,255,255,0.09)" }} transition={{ type:"spring", stiffness:300 }} className="rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-bold text-white/60 backdrop-blur-md cursor-default">
                 <CheckCircle2 className="mr-2 inline h-4 w-4 text-lime-200" />{item}
               </motion.div>
             ))}
@@ -241,7 +239,7 @@ export default function App() {
         </motion.div>
 
         {/* hero image cluster */}
-        <motion.div {...fadeUp(0.12)} style={{ y: imageY }} className="relative">
+        <motion.div {...fadeUp(0.12)} className="relative">
           <motion.div
             animate={{ y:[0,-14,0] }}
             transition={{ duration:5.5, repeat:Infinity, ease:"easeInOut" }}
@@ -258,14 +256,14 @@ export default function App() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
                 <motion.div
-                  initial={{ opacity:0, y:-8 }}
+                  initial={{ opacity:1, y:0 }}
                   animate={{ opacity:1, y:0 }}
                   transition={{ delay:0.6 }}
                   className="absolute left-5 top-5 rounded-full bg-orange-300 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-black"
                 >
                   Live Blend
                 </motion.div>
-                <div className="absolute bottom-5 left-5 right-5 rounded-[2rem] border border-white/10 bg-black/45 p-5 backdrop-blur-xl">
+                <div className="absolute bottom-5 left-5 right-5 rounded-[2rem] border border-white/10 bg-black/45 p-5 backdrop-blur-md">
                   <p className="text-xs font-bold uppercase tracking-[0.26em] text-orange-200">Today's favourite</p>
                   <h2 className="mt-2 text-4xl font-black tracking-[-0.06em]">Mango Nova</h2>
                   <p className="mt-2 text-sm text-white/55">Mango · passion fruit · lime · crushed ice</p>
@@ -295,7 +293,7 @@ export default function App() {
           <motion.div
             animate={{ y:[0,12,0] }}
             transition={{ duration:4.2, repeat:Infinity, ease:"easeInOut" }}
-            className="absolute -left-8 top-28 hidden rounded-3xl border border-white/10 bg-[#15110d]/85 p-4 backdrop-blur-xl md:block"
+            className="absolute -left-8 top-28 hidden rounded-3xl border border-white/10 bg-[#15110d]/85 p-4 backdrop-blur-md md:block"
           >
             <Factory className="mb-2 h-6 w-6 text-orange-200" />
             <p className="text-xs font-black">Open prep bar</p>
@@ -307,19 +305,19 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           STATS
       ══════════════════════════════════════════════════════════════════════ */}
-      <section ref={statsRef} className="relative mx-auto grid max-w-7xl gap-5 px-6 pb-24 md:grid-cols-4">
+      <section ref={statsRef} className="relative z-10 mx-auto grid max-w-7xl gap-5 px-6 pb-24 md:grid-cols-4">
         {stats.map(([num, text], i) => (
           <motion.div
             key={text}
-            initial={{ opacity:0, y:24 }}
+            initial={{ opacity:1, y:0 }}
             animate={statsIn ? { opacity:1, y:0 } : {}}
             transition={{ duration:0.6, delay: i*0.1, ease:[0.22,1,0.36,1] }}
             whileHover={{ y:-6 }}
-            className="rounded-[2rem] border border-white/10 bg-[#15110d]/70 p-7 backdrop-blur-xl"
+            className="rounded-[2rem] border border-white/10 bg-[#15110d]/70 p-7 backdrop-blur-md"
           >
             <motion.div
               className="text-5xl font-black tracking-[-0.06em] text-orange-200"
-              initial={{ opacity:0, scale:0.7 }}
+              initial={{ opacity:1, scale:1 }}
               animate={statsIn ? { opacity:1, scale:1 } : {}}
               transition={{ duration:0.5, delay: i*0.1+0.2, type:"spring" }}
             >
@@ -333,9 +331,9 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           STORY
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="story" ref={storyRef} className="relative mx-auto grid max-w-7xl gap-14 px-6 py-28 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
+      <section id="story" ref={storyRef} className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 py-28 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <motion.div
-          initial={{ opacity:0, x:-30 }}
+          initial={{ opacity:1, x:0 }}
           animate={storyIn ? { opacity:1, x:0 } : {}}
           transition={{ duration:0.7, ease:[0.22,1,0.36,1] }}
         >
@@ -352,7 +350,7 @@ export default function App() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity:0, x:30 }}
+          initial={{ opacity:1, x:0 }}
           animate={storyIn ? { opacity:1, x:0 } : {}}
           transition={{ duration:0.7, delay:0.1, ease:[0.22,1,0.36,1] }}
           className="grid gap-4 sm:grid-cols-2"
@@ -362,7 +360,7 @@ export default function App() {
               key={title}
               whileHover={{ y:-8, borderColor:"rgba(255,255,255,0.18)" }}
               transition={{ type:"spring", stiffness:280 }}
-              className="rounded-[2rem] border border-white/10 bg-[#15110d]/70 p-6 backdrop-blur-xl"
+              className="rounded-[2rem] border border-white/10 bg-[#15110d]/70 p-6 backdrop-blur-md"
             >
               <Icon className="mb-8 h-8 w-8 text-orange-200" />
               <h3 className="text-xl font-black tracking-[-0.03em]">{title}</h3>
@@ -375,7 +373,7 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           MENU
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="menu" className="relative rounded-t-[3rem] bg-[#eee6d8] px-6 py-28 text-[#15110d]">
+      <section id="menu" className="relative z-10 rounded-t-[3rem] bg-[#eee6d8] px-6 py-28 text-[#15110d]">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-2 lg:items-end">
             <div>
@@ -414,11 +412,11 @@ export default function App() {
 
                   {/* tag pill */}
                   <motion.div
-                    initial={{ opacity:0, x:-8 }}
+                    initial={{ opacity:1, x:0 }}
                     whileInView={{ opacity:1, x:0 }}
                     viewport={{ once:true }}
                     transition={{ delay: 0.2 + i*0.06 }}
-                    className="absolute left-4 top-4 rounded-full bg-white/15 px-3 py-1 text-xs font-black backdrop-blur-xl"
+                    className="absolute left-4 top-4 rounded-full bg-white/15 px-3 py-1 text-xs font-black backdrop-blur-md"
                   >
                     {drink.tag}
                   </motion.div>
@@ -452,7 +450,7 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           PROCESS
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="process" className="bg-[#eee6d8] px-6 pb-28 text-[#15110d]">
+      <section id="process" className="relative z-10 bg-[#eee6d8] px-6 pb-28 text-[#15110d]">
         <div className="mx-auto max-w-7xl">
           <div className="mb-14 max-w-3xl">
             <motion.p {...fadeUpView(0)} className="mb-4 text-sm font-black uppercase tracking-[0.3em] text-black/45">
@@ -470,7 +468,7 @@ export default function App() {
             {steps.map(([Icon, title, text], i) => (
               <motion.div
                 key={title}
-                initial={{ opacity:0, y:28 }}
+                initial={{ opacity:1, y:0 }}
                 whileInView={{ opacity:1, y:0 }}
                 viewport={{ once:true }}
                 transition={{ delay: i*0.1, duration:0.6, ease:[0.22,1,0.36,1] }}
@@ -498,7 +496,7 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           GALLERY
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="gallery" className="bg-[#eee6d8] px-6 pb-28 text-[#15110d]">
+      <section id="gallery" className="relative z-10 bg-[#eee6d8] px-6 pb-28 text-[#15110d]">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
@@ -518,7 +516,7 @@ export default function App() {
             {gallery.map((item, i) => (
               <motion.div
                 key={item.image}
-                initial={{ opacity:0, y:22 }}
+                initial={{ opacity:1, y:0 }}
                 whileInView={{ opacity:1, y:0 }}
                 viewport={{ once:true }}
                 transition={{ delay: i*0.09, duration:0.6, ease:[0.22,1,0.36,1] }}
@@ -534,7 +532,7 @@ export default function App() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <motion.div
-                  initial={{ opacity:0, y:8 }}
+                  initial={{ opacity:1, y:0 }}
                   whileInView={{ opacity:1, y:0 }}
                   viewport={{ once:true }}
                   transition={{ delay: i*0.09+0.2 }}
@@ -552,7 +550,7 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           BRAND / TRUST SECTION
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#eee6d8] px-6 pb-28 text-[#15110d]">
+      <section className="relative z-10 bg-[#eee6d8] px-6 pb-28 text-[#15110d]">
         <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[3rem] bg-[#15110d] p-6 text-white lg:grid-cols-[1.1fr_.9fr] lg:p-10">
           <div className="relative min-h-[520px] overflow-hidden rounded-[2.3rem]">
             <motion.img
@@ -564,11 +562,11 @@ export default function App() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
             <motion.div
-              initial={{ opacity:0, y:16 }}
+              initial={{ opacity:1, y:0 }}
               whileInView={{ opacity:1, y:0 }}
               viewport={{ once:true }}
               transition={{ duration:0.6, delay:0.15 }}
-              className="absolute bottom-6 left-6 right-6 rounded-[2rem] bg-black/45 p-5 backdrop-blur-xl"
+              className="absolute bottom-6 left-6 right-6 rounded-[2rem] bg-black/45 p-5 backdrop-blur-md"
             >
               <p className="text-sm font-bold uppercase tracking-[0.24em] text-orange-200">What you see behind the counter</p>
               <h3 className="mt-2 text-4xl font-black tracking-[-0.06em]">Proof, not promises.</h3>
@@ -589,7 +587,7 @@ export default function App() {
               {features.map((item, i) => (
                 <motion.div
                   key={item}
-                  initial={{ opacity:0, x:-14 }}
+                  initial={{ opacity:1, x:0 }}
                   whileInView={{ opacity:1, x:0 }}
                   viewport={{ once:true }}
                   transition={{ delay: i*0.07, duration:0.5 }}
@@ -607,7 +605,7 @@ export default function App() {
       {/* ══════════════════════════════════════════════════════════════════════
           VISIT / CTA
       ══════════════════════════════════════════════════════════════════════ */}
-      <section id="visit" className="bg-[#eee6d8] px-6 pb-10 text-[#15110d]">
+      <section id="visit" className="relative z-10 bg-[#eee6d8] px-6 pb-10 text-[#15110d]">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[3rem] bg-gradient-to-br from-orange-300 via-yellow-200 to-lime-300 p-9 md:p-14">
           <div className="grid gap-10 lg:grid-cols-[1fr_.9fr] lg:items-end">
             <motion.div {...fadeUpView(0)}>
@@ -629,7 +627,7 @@ export default function App() {
                 <motion.div
                   key={label}
                   whileHover={{ scale:1.02 }}
-                  className="flex items-center gap-4 rounded-2xl bg-white/40 px-5 py-4 backdrop-blur-xl"
+                  className="flex items-center gap-4 rounded-2xl bg-white/40 px-5 py-4 backdrop-blur-md"
                 >
                   <Icon className="h-5 w-5 flex-shrink-0 text-black" />
                   <div>
@@ -655,6 +653,170 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
+          FOOTER — Developed by Vaster Global
+      ══════════════════════════════════════════════════════════════════════ */}
+      <footer className="relative z-10 bg-[#eee6d8] px-6 pb-8 pt-0 text-[#15110d]">
+        <div className="mx-auto max-w-7xl">
+
+          {/* top rule */}
+          <div className="mb-10 h-px bg-black/10" />
+
+          {/* main grid */}
+          <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr] lg:grid-cols-[1.7fr_1fr_1fr_1fr]">
+
+            {/* Brand */}
+            <div>
+              <div className="mb-5 flex items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-orange-300 to-lime-300 text-black shadow-md shadow-orange-300/25">
+                  <Leaf className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-black leading-none">Zestora</p>
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-black/38">Cold Press Lab</p>
+                </div>
+              </div>
+              <p className="max-w-xs text-sm leading-relaxed text-black/45">
+                Colombo's freshest cold press bar. Real fruit, no shortcuts, and every blend made only after you order.
+              </p>
+              <div className="mt-6 flex gap-2.5">
+                <a href="https://wa.me/94706857171" target="_blank" rel="noreferrer"
+                  className="grid h-9 w-9 place-items-center rounded-full bg-black/7 text-black/45 transition hover:bg-[#15110d] hover:text-lime-300">
+                  <MessageCircle className="h-4 w-4" />
+                </a>
+                <a href="#"
+                  className="grid h-9 w-9 place-items-center rounded-full bg-black/7 text-black/45 transition hover:bg-[#15110d] hover:text-orange-300">
+                  <Phone className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Navigate */}
+            <div>
+              <p className="mb-5 text-[10px] font-black uppercase tracking-[0.3em] text-black/30">Navigate</p>
+              <ul className="space-y-3">
+                {[["Our story","#story"],["The menu","#menu"],["How it works","#process"],["Gallery","#gallery"],["Visit us","#visit"]].map(([label,href]) => (
+                  <li key={label}>
+                    <a href={href} className="text-sm text-black/45 transition hover:text-[#15110d]">{label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <p className="mb-5 text-[10px] font-black uppercase tracking-[0.3em] text-black/30">Contact</p>
+              <ul className="space-y-3 text-sm text-black/45">
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
+                  Colombo, Sri Lanka
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <Clock className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
+                  Open daily · 8 AM – 10 PM
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
+                  070 685 7171
+                </li>
+              </ul>
+              <motion.a href="https://wa.me/94706857171" target="_blank" rel="noreferrer"
+                whileHover={{ scale:1.04 }} whileTap={{ scale:0.97 }}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#15110d] px-5 py-2.5 text-xs font-black text-white transition hover:bg-orange-500">
+                <MessageCircle className="h-3.5 w-3.5 text-lime-300" /> Order Now
+              </motion.a>
+            </div>
+
+            {/* Promise — hidden on small */}
+            <div className="hidden lg:block">
+              <p className="mb-5 text-[10px] font-black uppercase tracking-[0.3em] text-black/30">Our promise</p>
+              <ul className="space-y-2.5">
+                {["0% artificial colors","Fresh fruit every day","Built only after you order","4-min blend, always","Sinhala & English support"].map(p => (
+                  <li key={p} className="flex items-center gap-2 text-sm text-black/42">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-orange-400" />{p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="mt-12 flex flex-col items-center justify-between gap-5 border-t border-black/10 pt-8 sm:flex-row">
+
+            {/* copyright */}
+            <p className="text-xs text-black/30 order-3 sm:order-1">
+              © 2025 Zestora Cold Press Lab · All rights reserved
+            </p>
+
+            {/* ── Vaster Global badge ── */}
+           <motion.a
+  href="https://vasterglobal.com"
+  target="_blank"
+  rel="noreferrer"
+  whileHover={{
+    scale: 1.03,
+    boxShadow: "0 8px 24px -4px rgba(0,0,0,0.12)",
+  }}
+  className="order-1 flex items-center gap-3 rounded-2xl border border-black/12 bg-white/80 px-5 py-3 shadow-sm backdrop-blur-sm transition sm:order-2"
+>
+  <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-black/45 whitespace-nowrap">
+    Developed by
+  </span>
+
+  {/* VASTER wordmark */}
+  <svg
+    viewBox="0 0 260 56"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-[18px] w-auto"
+    aria-label="Vaster"
+  >
+    <path
+      d="M2 8 L16 8 L28 40 L40 8 L54 8 L34 50 L22 50 Z"
+      fill="#E31E25"
+    />
+
+    <path
+      d="M50 50 L64 8 L78 8 L92 50 L78 50 L74 38 L68 38 L64 50 Z"
+      fill="#E31E25"
+    />
+    <path d="M69 28 L71 18 L75 28 Z" fill="#eee6d8" />
+
+    <path
+      d="M96 40 C97 47 102 50 112 50 L124 50 C134 50 136 44 136 39 C136 33 130 30 122 28 L114 26 C108 24 106 22 106 19 C106 15 109 13 116 13 L128 13 C132 13 134 10 134 8 L98 8 C98 13 102 16 110 18 L118 20 C126 22 128 25 128 30 C128 35 124 37 116 37 L104 37 C100 37 99 38 99 41 Z"
+      fill="#E31E25"
+    />
+
+    <path
+      d="M132 8 L132 18 L146 18 L146 50 L160 50 L160 18 L174 18 L174 8 Z"
+      fill="#E31E25"
+    />
+
+    <path
+      d="M178 8 L178 50 L202 50 L202 41 L191 41 L191 33 L200 33 L200 25 L191 25 L191 17 L202 17 L202 8 Z"
+      fill="#E31E25"
+    />
+
+    <path
+      d="M206 8 L206 50 L220 50 L220 35 L225 35 L236 50 L252 50 L238 33 C244 31 248 26 248 20 C248 13 243 8 233 8 Z M220 18 L231 18 C235 18 236 20 236 22 C236 25 234 28 231 28 L220 28 Z"
+      fill="#E31E25"
+    />
+  </svg>
+
+  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-black/45 whitespace-nowrap">
+    Global
+  </span>
+</motion.a>
+
+            {/* legal */}
+            <div className="order-2 sm:order-3 flex gap-5 text-[11px] text-black/28">
+              <a href="#" className="transition hover:text-black/55">Privacy</a>
+              <a href="#" className="transition hover:text-black/55">Terms</a>
+            </div>
+          </div>
+        </div>
+      </footer>
 
     </main>
   );
